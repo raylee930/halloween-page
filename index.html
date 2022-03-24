@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html>
+   <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+      <meta charset="UTF-8">
+      <title></title>
+      <script src="./TweenMax.min.js"></script>
+      <script src="./jquery-3.3.1.slim.js"></script>
+   </head>
+   <body>
+      <div class="moon">🌛</div>
+	   <div class="skyWrapper">
+         <div class="sky"></div>
+      </div>
+      <div class="spookContainer"></div>
+      
+      <div class="forestWrapper">
+         <div class="forest"></div>
+         <div class="flowerbed"></div>
+      </div>
+
+      <div class="graves">
+        <div class="coffin">⚰️</div>     
+        <div class="skully">💀</div>
+     </div>
+
+      <script>
+
+          function percentToPixel(percent, maxPixel){
+              return maxPixel/100*percent;
+          }
+		  
+		 function getRandomInt(min, max) {
+           min = Math.ceil(min);
+           max = Math.floor(max);
+           return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+         }
+         
+         function getRandomFloat(min,max) {
+         		return highlightedNumber = Math.random() * (max - min) + min;
+         };
+		  
+         var spookContainer = document.querySelector(".spookContainer");
+         for(var i = 0; i <8; i ++){
+         	var mrSpooker = $('<div class="mrSpooker">🦇</div>').appendTo(spookContainer);
+         	TweenMax.fromTo(mrSpooker,(Math.random()*15)+15,
+         	{left:-100,top:i*40,scale:Math.random()*2+1},
+            {left:"110%",ease:Power0.easeNone,delay:Math.random()*15,repeat:-1});
+         };
+         
+         for(var i = 0; i <12; i ++){
+             var cloud = $('<div class="cloud">☁️</div>').appendTo(spookContainer); //implement lightning clouds.
+             TweenMax.fromTo(cloud,(Math.random()*25)+25,
+         	{left:-100,top:i*20,scale:7,opacity:(Math.random()*0.6)+0.3},
+             {left:"110%",ease:Power0.easeNone,delay:Math.random()*15,repeat:-1}) //have clouds start at 0 after first repeat (make a function that takes current speed and add that tween onComplete of first tween).
+         };
+
+         var saucer = $('<div class="saucer withCow">🛸</div>').appendTo(spookContainer);
+         TweenMax.fromTo(saucer,10,
+         {left:Math.random()*document.body.offsetWidth,top:"130%",scale:5},
+         {left:Math.random()*document.body.offsetWidth,top:"-70%",ease:Power0.easeNone,repeat: -1,repeatDelay: Math.random()*10+5});
+
+         var cow = $('<div class="cow">🐄</div>').appendTo(document.querySelector(".saucer"));
+
+         var cone = $('<div class="cone"></div>').appendTo(document.querySelector(".saucer"));
+         TweenMax.fromTo(cone,0.25,
+         {opacity: 0.5},
+         {opacity: 0.9,repeat: -1,yoyo: true});
+		
+        $(".spookContainer").on("click", ".mrSpooker", function(event){ 
+            if(event.currentTarget.innerHTML === "🧛‍"){
+                event.currentTarget.innerHTML = "🦇";
+            }
+            else if(event.currentTarget.innerHTML == "🦇"){
+              event.currentTarget.innerHTML = "🧛‍";
+            }
+          });
+        
+        $("body").on("click", ".moon", function(event){
+            var moonScale = 0;
+            moonScale += 0.1;
+            document.querySelector(".moon").style.transform = "scale("+ 5 + moonScale + ") rotate(320deg);"
+        })
+
+          $(".spookContainer").on("click", ".saucer", function(event){ //Make this a onetime event
+              var cow = document.querySelector(".cow");
+              document.body.appendChild(cow);
+              var pos = $('.saucer').offset();
+              var top = pos.top;
+              var left = pos.left;
+              $('.cow').css({
+                  top:top,
+                  left:left
+              })
+              $(".cone").css("display", "none");
+              TweenMax.to(document.querySelector(".cow"), 0.75,             
+              {top:"80%",ease:Power0.easeNone,onComplete:function(){TweenMax.to(document.querySelector(".cow"), 5,             
+              {left:"-20%",ease:Power0.easeNone})}})
+          });
+
+        $(".forestWrapper").on("click", ".tree", function(event){ //make something different with the ghosts
+			  event.currentTarget.classList.toggle("spookyfy");
+          });
+
+         $(".graves").on("click", ".skully", function(event){
+        
+        var doot = new Audio("./skullsound.mp3");
+        doot.play();
+        
+         });
+
+        $(".graves").on("click", ".coffin", function(event){
+            var mrSpooker = $('<div class="mrSpooker">👻</div>').appendTo(spookContainer); //percent to pixel machen
+            var maxPixelHeight = document.querySelector("body").offsetHeight;
+            var maxPixelWidth = document.querySelector("body").offsetWidth;
+            TweenMax.to(mrSpooker, 0.2, {css:{scale: getRandomFloat(2,4), opacity:getRandomFloat(0.5,0.8)}});
+
+            TweenMax.to(mrSpooker, 10, {bezier:{type:"cubic", values:[{x:percentToPixel(getRandomInt(2,5),maxPixelWidth), y:percentToPixel(90,maxPixelHeight)}, 
+                                                                    {x:percentToPixel(getRandomInt(45,55),maxPixelWidth), y:percentToPixel(70,maxPixelHeight)}, 
+                                                                    {x:percentToPixel(getRandomInt(30,75),maxPixelWidth), y:percentToPixel(50,maxPixelHeight)}, 
+                                                                    {x:percentToPixel(getRandomInt(20,80),maxPixelWidth), y:percentToPixel(-10,maxPixelHeight)},
+                                                                    {x:percentToPixel(getRandomInt(-10,110),maxPixelWidth), y:percentToPixel(50,maxPixelHeight)}
+                                                                ], 
+                                                                    autoRotate:["x","y","rotation", 0, true]}, ease:Power2.easeInOut});
+            // TweenMax.to(mrSpooker, 5, {bezier:{type:"cubic", values:[{x:"3%", y:"95%"}, {x:"8%", y:"80%"}, {x:"1%", y:"50%"}, {x:"8%", y:"30%"}, {x:"1%", y:"10%"}, {x:"8%", y:"-15%"}], autoRotate:["x","y","rotation", 0, true]}, ease:Power1.easeInOut});
+            // geist kommt aus dem sarg und fliegt in die luft
+        });
+          
+        var starHtml = '✨'
+		 for(var i = 0; i < getRandomInt(300,500); i ++){
+			 var  star = $(".sky").append("<div class='star' style='transform:scale("+getRandomInt(0.2,1.2)+"); opacity:"+getRandomFloat(0.2,1)+"; top:"+getRandomInt(10,750)+"px; right:"+ getRandomInt(0,document.querySelector("body").offsetWidth) +"px' >"+ starHtml +"</div>")
+            };
+          
+
+		 for(var i = 0; i < getRandomInt(200,300); i ++){
+            var treeHtml = '🌲';
+            if (getRandomInt(0,2) === 1){
+                treeHtml = '🌳';
+            } 
+
+             scale = getRandomInt(4,8);
+             switch(scale){
+                case 4:
+                zindex = 5;
+                translatey = getRandomInt(40,45);
+                    break;
+                case 5:
+                zindex = 4;
+                translatey = getRandomInt(25,30);
+                    break;
+                case 6:
+                zindex = 3;
+                translatey = getRandomInt(15,20);
+                    break;
+                case 7:
+                zindex = 2;
+                translatey = getRandomInt(10,15);
+                    break;
+             }
+			 $(".forest").append("<div class='tree spookyfy' style='transform:scale("+ scale +") translateY("+ translatey+"px); right:"+ getRandomInt(0,document.querySelector("body").offsetWidth +200) +"px; z-index: "+ zindex +";' >"+ treeHtml +"</div>")
+         };
+          
+         for(var i = 0; i < getRandomInt(5,8); i++){
+             var flowerHtml = '🥀';
+             $(".flowerbed").append("<div class='flower' style='transform:scale(1) translateY("+ getRandomInt(200,210) +"px); right:" + getRandomInt(0,document.querySelector("body").offsetWidth +200) +"px; z-index: 7; '>" + flowerHtml + "</div>") 
+         }
+
+            for(var i = 0; i < getRandomInt(500,800); i++){
+             var leafHtml = '🍂';
+             translatey = getRandomInt(170,220);
+             if(translatey >= 205){
+                 zindex = 7;
+             }
+             else if(translatey >= 180){
+                 zindex = 4;
+             }
+             else{
+                 zindex = 3;
+             }
+             $(".flowerbed").append("<div class='leaf' style='transform:scale(1) translateY("+ translatey +"px); right:" + getRandomInt(0,document.querySelector("body").offsetWidth +200) +"px; z-index: "+ zindex +"; '>" + leafHtml + "</div>") 
+         }
+          
+      </script>
+      <style>
+       /*i know i could have used font sizes ;) */
+body {
+    overflow: hidden;
+    position: relative;
+    height: 100vh;
+    background: rgb(85,48,28);
+background: linear-gradient(0deg, rgba(85,48,28,1) 11%, rgba(223,151,48,1) 20%, rgba(40,67,94,1) 26%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3f4c6b', endColorstr='#3f4c6b',GradientType=0 ); /* IE6-9 */
+}
+.spookContainer {
+    position: relative;
+    width: 100%;
+    height: 600px;
+}
+.mrSpooker {
+    position: absolute;
+    z-index: 2;
+}
+
+.saucer{
+    position: absolute;
+    z-index: 3;
+}
+
+.saucer:hover{
+cursor: pointer;
+}
+
+.cloud{
+    position: absolute;
+    z-index: 2;
+}
+
+.cone{
+    position: relative;
+    top:-5px;
+    left:1px;
+    border-bottom: 30px solid rgb(210, 238, 51, 0.33);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      height: 0;
+      width: 10px;
+}
+
+.saucer .cow{
+    position: absolute;
+    top:25px;
+    transform: scale(0.75);
+}
+
+.cow{
+    position: absolute;
+    transform: scale(3.75);
+    z-index: 4;
+    top: 0%;
+}
+
+.mrSpooker:hover{
+    cursor: pointer;
+}
+		  .iframe .superSPOOK{
+			  display:block;
+		  }
+		  
+		  .superSPOOK{
+			  display:none;
+		  }
+.skyWapper {
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+.sky {
+    position: absolute;
+    left: 0;
+    width: 100%;
+}
+.forestWrapper {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 35%;
+}
+.forest {
+    position: relative;
+    left: 200px;
+    width: 100%;
+}
+.flowerbed{
+    position: relative;
+    left: 200px;
+    width: 100%;
+}
+.flower{
+    position: absolute;
+}
+.leaf{
+    position: absolute;
+}
+.graves {
+    width: 230px;
+    position: absolute;
+    display: flex;
+    bottom: 40px;
+    transform: scale(4.2);
+    left: 380px;
+    z-index: 8;
+}
+.coffin:hover{
+    cursor: pointer;
+    animation: ease 0.2 all;
+    transform: scale(1.2);
+}
+
+.coffin:active{
+    cursor: pointer;
+    animation: ease 0.2 all;
+    transform: scale(0.8);
+}
+
+.coffin{
+    animation: ease 0.2 all;
+    z-index: 8;
+}
+
+.skully{
+    z-index: 8;
+}
+
+.skully:hover{
+    cursor: pointer;
+    animation: ease 0.2 all;
+    transform: scale(1.2);
+}
+
+.skully:active{
+    cursor: pointer;
+    animation: ease 0.2 all;
+    transform: scale(0.8);
+}
+
+.star {
+    position: absolute;
+}
+.tree {
+    position: absolute;
+}
+.moon {
+    display: inline-block;
+    transform: scale(5) rotate(320deg);
+    position: absolute;
+    z-index: 1;
+    right: 50px;
+    top: 50px;
+}
+
+.spookyfy{
+    filter: sepia(100%) hue-rotate(-5deg) saturate(500%);
+}
+
+      </style>
+   </body>
+</html>
